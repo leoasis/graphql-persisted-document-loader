@@ -1,0 +1,9 @@
+#import './dep.graphql'
+
+query SomeQuery {
+  foo {
+    bar
+    baz
+    ...Dep
+  }
+}

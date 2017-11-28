@@ -1,0 +1,10 @@
+query SomeQuery {
+  foo {
+    bar
+    baz
+    qux {
+      quix
+      quaz
+    }
+  }
+}

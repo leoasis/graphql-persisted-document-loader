@@ -1,0 +1,6 @@
+fragment Dep on Foo {
+  qux {
+    quix
+    quaz
+  }
+}
