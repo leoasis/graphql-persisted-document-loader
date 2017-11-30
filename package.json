@@ -1,6 +1,6 @@
 {
   "name": "graphql-persisted-document-loader",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Webpack loader that adds a documentId to a compiled graphql document, which can be used when persisting/retrieving documents",
   "main": "index.js",
   "repository": "git@github.com:leoasis/graphql-persisted-document-loader.git",
