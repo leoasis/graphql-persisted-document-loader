@@ -83,11 +83,13 @@ function tryAddDocumentId(options, content, module) {
   if (queries.length > 1) {
     throw new Error('Only one operation per file is allowed');
   } else if (queries.length === 1) {
-    const queryId = generateIdForQuery(options, Object.keys(queryMap)[0]);
+    const finalQueryStr = Object.keys(queryMap)[0]
+    const queryId = generateIdForQuery(options, finalQueryStr);
     content += `${os.EOL}doc.documentId = ${JSON.stringify(queryId)}`;
 
-    // Make the generated queryId visible for other modules 
+    // Make the generated queryId and final queryStr visible for other modules  
     module._graphQLQueryId = queryId
+    module._graphQLQuerySource = finalQueryStr
   }
 
   return content;
