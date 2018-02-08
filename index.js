@@ -84,6 +84,9 @@ function tryAddDocumentId(options, content, querySource) {
   } else if (queries.length === 1) {
     const queryId = generateIdForQuery(options, Object.keys(queryMap)[0]);
     content += `${os.EOL}doc.documentId = ${JSON.stringify(queryId)}`;
+
+    // Make the generated queryId visible for other modules 
+    this._module_._graphQLQueryId = queryId
   }
 
   return content;
