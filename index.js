@@ -86,7 +86,7 @@ function tryAddDocumentId(options, content, querySource) {
     content += `${os.EOL}doc.documentId = ${JSON.stringify(queryId)}`;
 
     // Make the generated queryId visible for other modules 
-    this._module_._graphQLQueryId = queryId
+    this._module._graphQLQueryId = queryId
   }
 
   return content;
