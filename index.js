@@ -42,7 +42,7 @@ module.exports = function graphQLPersistedDocumentLoader(content) {
     // If no deps, just try to generate the document id from the
     // source returned from graphql-tag loader result. This will
     // add an id only if the source contains an operation.
-    content = tryAddDocumentId(options, content, this._module._graphQLQuerySource);
+    content = tryAddDocumentId(options, content, this._module);
     return content;
   }
 
@@ -61,7 +61,7 @@ module.exports = function graphQLPersistedDocumentLoader(content) {
       // with this module's query source, we can send all that to
       // generate the document id, if the resulting source
       // is for an operation.
-      content = tryAddDocumentId(options, content, this._module._graphQLQuerySource);
+      content = tryAddDocumentId(options, content, this._module);
     } catch (e) {
       callback(e);
     }
@@ -73,7 +73,8 @@ module.exports = function graphQLPersistedDocumentLoader(content) {
   });
 };
 
-function tryAddDocumentId(options, content, querySource) {
+function tryAddDocumentId(options, content, module) {
+  const querySource = module._graphQLQuerySource
   const queryMap = new ExtractGQL({
     queryTransformers: [options.addTypename && queryTransformers.addTypenameTransformer].filter(Boolean)
   }).createOutputMapFromString(querySource);
@@ -82,8 +83,13 @@ function tryAddDocumentId(options, content, querySource) {
   if (queries.length > 1) {
     throw new Error('Only one operation per file is allowed');
   } else if (queries.length === 1) {
-    const queryId = generateIdForQuery(options, Object.keys(queryMap)[0]);
+    const finalQueryStr = Object.keys(queryMap)[0]
+    const queryId = generateIdForQuery(options, finalQueryStr);
     content += `${os.EOL}doc.documentId = ${JSON.stringify(queryId)}`;
+
+    // Make the generated queryId and final queryStr visible for other modules  
+    module._graphQLQueryId = queryId
+    module._graphQLQuerySource = finalQueryStr
   }
 
   return content;
