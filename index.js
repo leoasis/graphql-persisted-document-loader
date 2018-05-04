@@ -75,7 +75,7 @@ module.exports = function graphQLPersistedDocumentLoader(content) {
 
 function tryAddDocumentId(options, content, querySource) {
   const queryMap = new ExtractGQL({
-    queryTransformers: [options.addTypename && queryTransformers.addTypenameTransformer].filter(Boolean)
+    queryTransformers: options.queryTransformers || [options.addTypename && queryTransformers.addTypenameTransformer].filter(Boolean)
   }).createOutputMapFromString(querySource);
 
   const queries = Object.keys(queryMap);
