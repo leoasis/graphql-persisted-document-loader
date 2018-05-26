@@ -83,7 +83,8 @@ function tryAddDocumentId(options, content, querySource) {
     throw new Error('Only one operation per file is allowed');
   } else if (queries.length === 1) {
     const queryId = generateIdForQuery(options, Object.keys(queryMap)[0]);
-    content += `${os.EOL}doc.documentId = ${JSON.stringify(queryId)}`;
+    var insertionIdnex = content.lastIndexOf("module.exports");
+    content.substring(0, insertionIdnex) + `${os.EOL}doc.documentId = ${JSON.stringify(queryId)};${os.EOL}` + content.substring(insertionIdnex)
   }
 
   return content;
