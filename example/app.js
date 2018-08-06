@@ -7,8 +7,11 @@ el.innerHTML = `
   <h1>Document id: ${query.documentId}</h1>
   <pre>${JSON.stringify(query, null, 4)}</pre>
   <hr />
-  <h1>Document id: ${queryWithDeps.documentId}</h1>
-  <pre>${JSON.stringify(queryWithDeps, null, 4)}</pre>
+  <h1>Document id: ${queryWithDeps.SomeQuery.documentId}</h1>
+  <pre>${JSON.stringify(queryWithDeps.SomeQuery, null, 4)}</pre>
+  <hr />
+  <h1>Document id: ${queryWithDeps.SomeMutation.documentId}</h1>
+  <pre>${JSON.stringify(queryWithDeps.SomeMutation, null, 4)}</pre>
 `;
 
 document.body.appendChild(el);

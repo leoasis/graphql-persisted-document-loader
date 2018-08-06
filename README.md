@@ -12,7 +12,7 @@ To solve this problem, this loader works after the [graphql-tag loader](https://
 
 ## Installation and setup
 
-You need to have the [graphql-tag](https://github.com/apollographql/graphql-tag) package installed.
+You need to have the [graphql-tag](https://github.com/apollographql/graphql-tag) *(>= v2.8.0)* package installed.
 
 First install this package
 
