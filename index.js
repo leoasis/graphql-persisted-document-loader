@@ -80,7 +80,21 @@ function tryAddDocumentId(options, content, querySource) {
 
   const queries = Object.keys(queryMap);
   if (queries.length > 1) {
-    throw new Error('Only one operation per file is allowed');
+    queries
+      .map(query => {
+        const matched = query.match(/^(mutation|query)\ ([^\ \(\{]*)/)
+        if (!matched) {
+          return false
+        }
+        return {
+          operationName: matched[2],
+          id: generateIdForQuery(options, query)
+        }
+      })
+      .filter(isValid => !!isValid)
+      .forEach(({ id, operationName }) => {
+        content += `${os.EOL}module.exports["${operationName}"].documentId = ${JSON.stringify(id)};`
+      })
   } else if (queries.length === 1) {
     const queryId = generateIdForQuery(options, Object.keys(queryMap)[0]);
     content += `${os.EOL}doc.documentId = ${JSON.stringify(queryId)}`;

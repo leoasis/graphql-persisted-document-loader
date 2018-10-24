@@ -7,3 +7,11 @@ query SomeQuery {
     ...Dep
   }
 }
+
+mutation SomeMutation {
+  foo {
+    bar
+    baz
+    ...Dep
+  }
+}

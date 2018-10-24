@@ -10,12 +10,15 @@
     "start": "webpack-dev-server --config ./example/webpack.config.js"
   },
   "devDependencies": {
-    "graphql-tag": "^2.5.0",
+    "graphql-tag": "^2.9.2",
     "webpack": "^3.8.1",
     "webpack-dev-server": "^2.9.5"
   },
   "dependencies": {
     "loader-utils": "^1.1.0",
     "persistgraphql": "^0.3.11"
+  },
+  "peerDependencies": {
+    "graphql-tag": "^2.8.0"
   }
 }
