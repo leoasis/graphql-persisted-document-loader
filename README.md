@@ -56,7 +56,7 @@ console.log(query.documentId); // => 5eef6cd6a52ee0d67bfbb0fdc72bbbde4d70331834e
 
 * `generateId`: `function (querySource: string) => string` Function that allows to generate a custom documentId from the query source. This source contains all the dependencies sources concatenated, so it's suitable for hashing. By default it generates the sha256 hash in hexadecimal format. The source is concatenated in the same way as you'd get it from the `persistgraphql` tool, so hashing the queries from the output of that tool should get you the same hash value.
 * `addTypename`: `boolean` Apply a query transformation to the query documents, adding the __typename field at every level of the query. You must pass this option if your client code uses this query transformation.
-* `queryTransformers`: `[function(documentNode) => documentNode]` Directly override the query transformations list to provide additional transforms as needed. This is what a query transformer to strip the client fields looks like:
+* `queryTransformers`: `array[function(documentNode) => documentNode]` Directly override the query transformations list to provide additional transforms as needed. This is what a query transformer to strip the client fields looks like:
 
 ```js
 
