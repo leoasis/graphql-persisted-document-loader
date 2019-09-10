@@ -3,7 +3,6 @@ const os = require('os');
 const loaderUtils = require('loader-utils');
 const { ExtractGQL } = require('persistgraphql/lib/src/ExtractGQL');
 const queryTransformers = require('persistgraphql/lib/src/queryTransformers');
-const loadModuleRecursively = require('./load-module-recursively');
 
 module.exports = function graphQLPersistedDocumentLoader(content) {
   const deps = [];
@@ -15,7 +14,7 @@ module.exports = function graphQLPersistedDocumentLoader(content) {
   const sandbox = {
     require(file) {
       deps.push(new Promise((resolve, reject) => {
-        loadModuleRecursively(context, file, (err, source, sourceMap, module) => {
+        context.loadModule(file, (err, source, sourceMap, module) => {
           if (err) {
             reject(err);
           } else {
