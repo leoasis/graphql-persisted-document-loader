@@ -56,5 +56,38 @@ console.log(query.documentId); // => 5eef6cd6a52ee0d67bfbb0fdc72bbbde4d70331834e
 
 * `generateId`: `function (querySource: string) => string` Function that allows to generate a custom documentId from the query source. This source contains all the dependencies sources concatenated, so it's suitable for hashing. By default it generates the sha256 hash in hexadecimal format. The source is concatenated in the same way as you'd get it from the `persistgraphql` tool, so hashing the queries from the output of that tool should get you the same hash value.
 * `addTypename`: `boolean` Apply a query transformation to the query documents, adding the __typename field at every level of the query. You must pass this option if your client code uses this query transformation.
+* `queryTransformers`: `array[function(documentNode) => documentNode]` Directly override the query transformations list to provide additional transforms as needed. This is what a query transformer to strip the client fields looks like:
 
+```js
 
+function removeClientFieldsTransformer(doc: DocumentNode) => {
+  function removeClientFieldsFromSelectionSet(selectionSet) {
+    if (selectionSet.selections) {
+      // eslint-disable-next-line no-param-reassign
+      selectionSet.selections = selectionSet.selections.map((selection) => {
+        if (selection.directives && selection.directives.length) {
+          const hasClient = selection.directives.find(d => d.name.value === 'client');
+          if (hasClient) return false;
+        }
+        if (selection.kind === 'Field' || selection.kind === 'InlineFragment') {
+          if (selection.selectionSet) {
+            removeClientFieldsFromSelectionSet(selection.selectionSet);
+          }
+        }
+        return selection;
+      }).filter(s => !!s);
+    }
+    return selectionSet;
+  }
+
+  const docClone = JSON.parse(JSON.stringify(doc));
+
+  docClone.definitions.forEach((definition: DefinitionNode) => {
+    const isRoot = definition.kind === 'OperationDefinition';
+    removeClientFieldsFromSelectionSet(definition.selectionSet, isRoot);
+  });
+
+  return docClone;
+};
+```
+Further reading on the DocumentNode object can be accomplished here: https://github.com/graphql/graphql-js/blob/master/src/language/ast.js
