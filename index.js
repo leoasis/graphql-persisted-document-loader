@@ -71,6 +71,7 @@ module.exports = function graphQLPersistedDocumentLoader(content) {
 };
 
 function tryAddDocumentId(options, content, querySource) {
+  // Every file may contain multiple operations
   const operations = separateOperations(parse(querySource));
 
   Object.keys(operations).map((operation) => {
