@@ -1,6 +1,8 @@
 const vm = require('vm');
 const os = require('os');
 const loaderUtils = require('loader-utils');
+const { print, parse, separateOperations } = require('graphql');
+const { addTypenameToDocument } = require('apollo-utilities');
 
 module.exports = function graphQLPersistedDocumentLoader(content) {
   const deps = [];
@@ -84,7 +86,7 @@ function tryAddDocumentId(options, content, querySource) {
 
     // Add them as exports to the final file
     // If there is only one operation, it will be the default export
-    if (operations.length > 1) {
+    if (Object.keys(operations).length > 1) {
       content += `${
         os.EOL
       }module.exports["${operation}"].documentId = ${JSON.stringify(queryId)};`;
