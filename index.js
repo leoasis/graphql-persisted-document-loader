@@ -1,8 +1,8 @@
 const vm = require('vm');
 const os = require('os');
 const loaderUtils = require('loader-utils');
-const { ExtractGQL } = require('persistgraphql/lib/src/ExtractGQL');
-const queryTransformers = require('persistgraphql/lib/src/queryTransformers');
+const { print, parse, separateOperations } = require('graphql');
+const { addTypenameToDocument } = require('apollo-utilities');
 
 module.exports = function graphQLPersistedDocumentLoader(content) {
   const deps = [];
@@ -73,31 +73,27 @@ module.exports = function graphQLPersistedDocumentLoader(content) {
 };
 
 function tryAddDocumentId(options, content, querySource) {
-  const queryMap = new ExtractGQL({
-    queryTransformers: [options.addTypename && queryTransformers.addTypenameTransformer].filter(Boolean)
-  }).createOutputMapFromString(querySource);
+  // Every file may contain multiple operations
+  const operations = separateOperations(parse(querySource));
 
-  const queries = Object.keys(queryMap);
-  if (queries.length > 1) {
-    queries
-      .map(query => {
-        const matched = query.match(/^(mutation|query)\ ([^\ \(\{]*)/)
-        if (!matched) {
-          return false
-        }
-        return {
-          operationName: matched[2],
-          id: generateIdForQuery(options, query)
-        }
-      })
-      .filter(isValid => !!isValid)
-      .forEach(({ id, operationName }) => {
-        content += `${os.EOL}module.exports["${operationName}"].documentId = ${JSON.stringify(id)};`
-      })
-  } else if (queries.length === 1) {
-    const queryId = generateIdForQuery(options, Object.keys(queryMap)[0]);
-    content += `${os.EOL}doc.documentId = ${JSON.stringify(queryId)}`;
-  }
+  Object.keys(operations).map((operation) => {
+    const document = options.addTypename
+      ? addTypenameToDocument(operations[operation])
+      : operations[operation];
+    const query = print(document);
+
+    const queryId = generateIdForQuery(options, query);
+
+    // Add them as exports to the final file
+    // If there is only one operation, it will be the default export
+    if (Object.keys(operations).length > 1) {
+      content += `${
+        os.EOL
+      }module.exports["${operation}"].documentId = ${JSON.stringify(queryId)};`;
+    } else {
+      content += `${os.EOL}doc.documentId = ${JSON.stringify(queryId)}`;
+    }
+  });
 
   return content;
 }
